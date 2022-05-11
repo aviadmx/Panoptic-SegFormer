@@ -1,6 +1,7 @@
 _base_ = './base.py'
 _dim_ = 256
 _num_levels_=4
+load_from='./pretrained/panoptic_segformer_swinl_2x.pth'
 model = dict(
     type='PanSeg',
     # get swin-large
@@ -10,7 +11,8 @@ model = dict(
     #model = torch.load('checkpoints/swinl.pth')
     #torch.save(model['model'], 'checkpoints/swinl.pth')
     #print('DONE, swin-large was saved as checkpoints/swinl.pth')
-    pretrained='./checkpoints/swinl.pth',
+    #pretrained='./checkpoints/swinl.pth',
+    pretrained=None,
     backbone=dict(
         type='SwinTransformer',
         embed_dim=192,
