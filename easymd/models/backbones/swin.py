@@ -484,7 +484,8 @@ class SwinTransformer(nn.Module):
                  frozen_stages=-1,
                  use_checkpoint=False,
                  pretrained=None,
-                 init_cfg=None):
+                 init_cfg=None,
+                 **kwargs):
         super().__init__()
 
         self.pretrain_img_size = pretrain_img_size
