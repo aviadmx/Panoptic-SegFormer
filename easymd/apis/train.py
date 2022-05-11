@@ -14,7 +14,7 @@ from easymd.core import EvalHook_plus,DistEvalHook_plus
 from mmdet.datasets import (build_dataloader, build_dataset,
                             replace_ImageToTensor)
 from mmdet.utils import get_root_logger
-
+from easymd.runner.checkpoints import load_checkpoint
 
 
 
@@ -186,5 +186,6 @@ def train_detector_plus(model,
     if cfg.resume_from:
         runner.resume(cfg.resume_from)
     elif cfg.load_from:
-        runner.load_checkpoint(cfg.load_from)
+        # runner.load_checkpoint(cfg.load_from)
+        load_checkpoint(runner.model, cfg.load_from, map_location='cpu')
     runner.run(data_loaders, cfg.workflow)
