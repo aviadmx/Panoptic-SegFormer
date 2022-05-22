@@ -3,6 +3,7 @@ checkpoint_config = dict(interval=1)
 log_config = dict(
     interval=50,
     hooks=[
+        # dict(type='TensorboardLoggerHook'),
         dict(type='TextLoggerHook'),
         #dict(type='WandbLoggerHook',init_kwargs=dict(project="Panoptic-Segformer"))
     ])

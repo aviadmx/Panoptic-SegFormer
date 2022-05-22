@@ -38,7 +38,6 @@ data = dict(
         img_prefix=data_root + 'train2017/',
         pipeline=train_pipeline),
     val=dict( 
-      
         segmentations_folder='./seg',
         gt_json = './datasets/annotations/panoptic_val2017.json',
         gt_folder = './datasets/annotations/panoptic_val2017',
