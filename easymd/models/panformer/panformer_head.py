@@ -1091,7 +1091,7 @@ class PanformerHead(DETRHeadv2):
             img_shape = img_metas[img_id]['img_shape']
             ori_shape = img_metas[img_id]['ori_shape']
             scale_factor = img_metas[img_id]['scale_factor']
-
+            # print('val processing', img_metas[img_id]['filename'])
             index, bbox, labels = self._get_bboxes_single(
                 cls_score, bbox_pred, img_shape, scale_factor, rescale)
 
@@ -1203,8 +1203,9 @@ class PanformerHead(DETRHeadv2):
                     results[1, _mask] = id_unique
                     id_unique += 1
 
-            file_name = img_metas[img_id]['filename'].split('/')[-1].split(
-                '.')[0]
+            # file_name = img_metas[img_id]['filename'].split('/')[-1].split(
+            #     '.')[0]
+            file_name = img_metas[img_id]['ori_filename']
             panoptic_list.append(
                 (results.permute(1, 2, 0).cpu().numpy(), file_name, ori_shape))
 
