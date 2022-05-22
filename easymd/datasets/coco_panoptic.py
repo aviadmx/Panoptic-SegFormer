@@ -18,43 +18,22 @@ from mmdet.datasets.custom import CustomDataset
 from easymd.datasets.panopticapi import pq_compute2
 from easymd.datasets.panopticapi import converter
 
+
 @DATASETS.register_module()
 class CocoDataset_panoptic(CustomDataset):
+    CLASSES = ['car', 'window']
 
-    CLASSES = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 
-        'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
-        'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 
-        'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
-        'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-        'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 
-        'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
-        'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 
-        'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
-        'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch', 
-        'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 
-        'mouse', 'remote', 'keyboard', 'cell phone', 'microwave',
-        'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock',
-        'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush',
-        'banner', 'blanket', 'bridge', 'cardboard', 'counter', 'curtain', 
-        'door-stuff', 'floor-wood', 'flower', 'fruit', 'gravel', 'house',
-        'light', 'mirror-stuff', 'net', 'pillow', 'platform','playingfield', 
-        'railroad', 'river', 'road', 'roof', 'sand', 'sea', 'shelf', 'snow',
-        'stairs', 'tent', 'towel', 'wall-brick', 'wall-stone', 'wall-tile', 
-        'wall-wood', 'water-other', 'window-blind', 'window-other', 'tree-merged',
-        'fence-merged', 'ceiling-merged', 'sky-other-merged', 'cabinet-merged', 
-        'table-merged', 'floor-other-merged', 'pavement-merged', 'mountain-merged',
-        'grass-merged', 'dirt-merged', 'paper-merged', 'food-other-merged',
-        'building-other-merged', 'rock-merged', 'wall-other-merged', 'rug-merged']
-  
     def __init__(self,
-            segmentations_folder='seg',
-            gt_json = './datasets/annotations/panoptic_val2017.json',
-            gt_folder = './datasets/annotations/panoptic_val2017',
-            **kwarags):
-            self.gt_json = gt_json
-            self.gt_folder =gt_folder
-            self.segmentations_folder=segmentations_folder
-            super(CocoDataset_panoptic,self).__init__(**kwarags)
+                 segmentations_folder='seg',
+                 gt_json='./datasets/annotations/panoptic_val2017.json',
+                 gt_folder='./datasets/annotations/panoptic_val2017',
+                 **kwarags):
+        self.gt_json = gt_json
+        self.gt_folder = gt_folder
+        self.segmentations_folder = segmentations_folder
+        self.excluded_images = ['bgr_2021/5158158.jpg', 'bgr_2021/3651786.jpg', 'bgr_2021/4732679.jpg']
+        super(CocoDataset_panoptic, self).__init__(**kwarags)
+
     def load_annotations(self, ann_file):
         """Load annotation from COCO style annotation file.
 
@@ -66,17 +45,21 @@ class CocoDataset_panoptic(CustomDataset):
         """
 
         self.coco = COCO(ann_file)
-        self.cat_ids = self.coco.get_cat_ids()#(cat_names=self.CLASSES)
+        self.cat_ids = self.coco.get_cat_ids()  # (cat_names=self.CLASSES)
         self.cat2label = {cat_id: i for i, cat_id in enumerate(self.cat_ids)}
         self.img_ids = self.coco.get_img_ids()
+        self.file_names_to_imd_ids = {}
         data_infos = []
         total_ann_ids = []
         for i in self.img_ids:
             info = self.coco.load_imgs([i])[0]
+            if info['file_name'] in self.excluded_images:
+                continue
             info['filename'] = info['file_name']
             data_infos.append(info)
             ann_ids = self.coco.get_ann_ids(img_ids=[i])
             total_ann_ids.extend(ann_ids)
+            self.file_names_to_imd_ids[info['file_name']] = i
         assert len(set(total_ann_ids)) == len(
             total_ann_ids), f"Annotation ids in '{ann_file}' are not unique!"
         return data_infos
@@ -366,7 +349,7 @@ class CocoDataset_panoptic(CustomDataset):
         assert isinstance(results, list), 'results must be a list'
         assert len(results) == len(self), (
             'The length of results is not equal to the dataset len: {} != {}'.
-            format(len(results), len(self)))
+                format(len(results), len(self)))
 
         if jsonfile_prefix is None:
             tmp_dir = tempfile.TemporaryDirectory()
@@ -417,23 +400,21 @@ class CocoDataset_panoptic(CustomDataset):
             dict[str, float]: COCO style evaluation metric.
         """
 
-
         metrics = metric if isinstance(metric, list) else [metric]
 
         eval_results = OrderedDict()
+
         if 'panoptic' in metrics:
-           
             assert 'panoptic' in results.keys()
-            panoptic_result = results['panoptic'] 
+            panoptic_result = results['panoptic']
             results_pq = pq_compute2(self.gt_json,panoptic_result, self.gt_folder, self.segmentations_folder,logger=logger)
-            eval_results.update(results_pq) 
-            metrics = [metric for metric in metrics if metric !='panoptic']
-        
+            eval_results.update(results_pq)
+            metrics = [metric for metric in metrics if metric != 'panoptic']
+
         if 'bbox' in results.keys() and 'segm' not in results.keys():
             results = results['bbox']
-        elif  'bbox' in results.keys() and 'segm' in results.keys():
-            results = [(bbox,segm) for bbox,segm in zip(results['bbox'],results['segm'])]
-
+        elif 'bbox' in results.keys() and 'segm' in results.keys():
+            results = [(bbox, segm) for bbox, segm in zip(results['bbox'], results['segm'])]
 
         allowed_metrics = ['bbox', 'segm', 'proposal', 'proposal_fast']
         for metric in metrics:
@@ -445,10 +426,9 @@ class CocoDataset_panoptic(CustomDataset):
         if metric_items is not None:
             if not isinstance(metric_items, list):
                 metric_items = [metric_items]
-        
+
         result_files, tmp_dir = self.format_results(results, jsonfile_prefix)
 
-        
         cocoGt = self.coco
         for metric in metrics:
             msg = f'Evaluating {metric}...'
@@ -592,7 +572,9 @@ class CocoDataset_panoptic(CustomDataset):
         if tmp_dir is not None:
             tmp_dir.cleanup()
         return eval_results
-id_and_category_maps =[
+
+
+id_and_category_maps = [
     {
         "supercategory": "person",
         "color": [
