@@ -40,7 +40,8 @@ def single_gpu_test_plus(model,
             result = model(return_loss=False, rescale=True, **data)
         assert isinstance(result,dict)
 
-        batch_size = len(result[0])
+        # batch_size = len(result[0])
+        batch_size = len(result[list(result.keys())[0]])
         if show or out_dir:
             if batch_size == 1 and isinstance(data['img'][0], torch.Tensor):
                 img_tensor = data['img'][0]
@@ -74,7 +75,7 @@ def single_gpu_test_plus(model,
             results['bbox'].extend([bbox for bbox in result['bbox']])
         if 'segm' in result.keys():
             results['segm'].extend([encode_mask_results(segm) for segm in result['segm']])
-        if 'panoptic' in results.keys():
+        if 'panoptic' in result.keys():
             results['panoptic'].extend([panoptic for panoptic in result['panoptic']]) 
 
         for _ in range(batch_size):
@@ -170,7 +171,8 @@ def multi_gpu_test_plus(model, data_loader,datasets='coco',segmentations_folder=
                 elif datasets in ['mapillary']:
                     image_id = file_name.split('.')[0]
                 elif datasets in ['coco']:
-                    image_id = int(file_name) # for coco
+                    # image_id = int(file_name) # for coco
+                    image_id = data_loader.dataset.file_names_to_imd_ids[file_name]
                 annotations.append({'image_id': image_id,
                                 'file_name':file_name+suffix,
                                 "segments_info": segm_info

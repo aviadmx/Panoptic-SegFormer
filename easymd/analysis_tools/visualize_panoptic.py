@@ -19,10 +19,10 @@ import matplotlib.pyplot as plt
 from skimage.segmentation import find_boundaries
 import mmcv
 from panopticapi.utils import IdGenerator, rgb2id
-try:
-    from detectron2.data import MetadataCatalog
-except:
-    print('no detecteon2')
+# try:
+#     from detectron2.data import MetadataCatalog
+# except:
+#     print('no detecteon2')
 #from detectron2.utils.visualizer import Visualizer
 import torch
 from easymd.models.utils.visual import Visualizer # we modified the Visualizer from detectron2
