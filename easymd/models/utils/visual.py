@@ -149,12 +149,12 @@ import torch
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from PIL import Image
 
-try:
-    from detectron2.data import MetadataCatalog
-    from detectron2.structures import BitMasks, Boxes, BoxMode, Keypoints, PolygonMasks, RotatedBoxes
-    from detectron2.utils.file_io import PathManager
-except:
-    print('no detectron2')
+# try:
+#     from detectron2.data import MetadataCatalog
+#     from detectron2.structures import BitMasks, Boxes, BoxMode, Keypoints, PolygonMasks, RotatedBoxes
+#     from detectron2.utils.file_io import PathManager
+# except:
+#     print('no detectron2')
 
 # Copyright (c) Facebook, Inc. and its affiliates.
 

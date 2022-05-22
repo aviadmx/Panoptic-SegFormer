@@ -161,7 +161,7 @@ def convert_panoptic_to_detection_coco_format_single_core(
                                                                  len(annotations_set)))
 
         
-        file_name = '{}.png'.format(annotation['file_name'].rsplit('.')[0])
+        file_name = '{}.png'.format(os.path.splitext(annotation['file_name'])[0])
         try:
             pan_format = np.array(
                 Image.open(os.path.join(segmentations_folder, file_name)), dtype=np.uint32
