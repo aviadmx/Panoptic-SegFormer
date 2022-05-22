@@ -295,7 +295,9 @@ class HungarianAssigner_filter(BaseAssigner):
                 break
         pos_ind = assigned_gt_inds.gt(0).nonzero().squeeze(1)
         neg_ind = assigned_gt_inds.eq(0).nonzero().squeeze(1)
-        
+
+        if result is None:
+            print('Problematic image:', img_meta['filename'])
         return pos_ind, neg_ind, result
             
 
