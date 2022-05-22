@@ -31,7 +31,7 @@ class CocoDataset_panoptic(CustomDataset):
         self.gt_json = gt_json
         self.gt_folder = gt_folder
         self.segmentations_folder = segmentations_folder
-        self.excluded_images = ['bgr_2021/5158158.jpg', 'bgr_2021/3651786.jpg', 'bgr_2021/4732679.jpg']
+        self.excluded_images = ['bgr_2021/5158158.jpg', 'bgr_2021/3651786.jpg', 'bgr_2021/4732679.jpg', 'bgr_2021/999001.jpg']
         super(CocoDataset_panoptic, self).__init__(**kwarags)
 
     def load_annotations(self, ann_file):
@@ -62,6 +62,10 @@ class CocoDataset_panoptic(CustomDataset):
             self.file_names_to_imd_ids[info['file_name']] = i
         assert len(set(total_ann_ids)) == len(
             total_ann_ids), f"Annotation ids in '{ann_file}' are not unique!"
+
+        ## TO UNCOMMENT ##
+        # data_infos = data_infos[:10]
+
         return data_infos
 
     def get_ann_info(self, idx):
