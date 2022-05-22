@@ -73,12 +73,14 @@ class PQStat():
             pq += pq_class
             sq += sq_class
             rq += rq_class
-        pq = pq/n
-        sq = sq/n
-        rq = rq/n
-        pq = float(f'{pq:0.3f}')
-        sq = float(f'{sq:0.3f}')
-        rq = float(f'{rq:0.3f}')
+        pq = sq = rq = 0.
+        if n > 0:
+            pq = pq/n
+            sq = sq/n
+            rq = rq/n
+            pq = float(f'{pq:0.3f}')
+            sq = float(f'{sq:0.3f}')
+            rq = float(f'{rq:0.3f}')
         return {'pq': pq, 'sq': sq, 'rq': rq , 'n': n}, per_class_results
 
 
