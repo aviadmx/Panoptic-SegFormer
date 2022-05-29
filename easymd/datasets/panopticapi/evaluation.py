@@ -73,11 +73,17 @@ class PQStat():
             pq += pq_class
             sq += sq_class
             rq += rq_class
-        pq = sq = rq = 0.
         if n > 0:
             pq = pq/n
             sq = sq/n
             rq = rq/n
+            pq = float(f'{pq:0.3f}')
+            sq = float(f'{sq:0.3f}')
+            rq = float(f'{rq:0.3f}')
+        else:
+            pq = 0
+            sq = 0
+            rq = 0
             pq = float(f'{pq:0.3f}')
             sq = float(f'{sq:0.3f}')
             rq = float(f'{rq:0.3f}')
@@ -249,18 +255,20 @@ def pq_compute_single_core(proc_id, annotation_set, gt_folder, pred_folder, cate
 
 
 def pq_compute_multi_core(matched_annotations_list, gt_folder, pred_folder, categories,iou_type, dilation_ratio,VOID):
-    cpu_num = multiprocessing.cpu_count()
-    annotations_split = np.array_split(matched_annotations_list, cpu_num)
-    #print("Number of cores: {}, images per core: {}".format(cpu_num, len(annotations_split[0])))
-    workers = multiprocessing.Pool(processes=cpu_num)
-    processes = []
-    for proc_id, annotation_set in enumerate(annotations_split):
-        p = workers.apply_async(pq_compute_single_core,
-                                (proc_id, annotation_set, gt_folder, pred_folder, categories, iou_type, dilation_ratio,VOID))
-        processes.append(p)
-    pq_stat = PQStat()
-    for p in processes:
-        pq_stat += p.get()
+    # cpu_num = multiprocessing.cpu_count()
+    # annotations_split = np.array_split(matched_annotations_list, cpu_num)
+    # #print("Number of cores: {}, images per core: {}".format(cpu_num, len(annotations_split[0])))
+    # workers = multiprocessing.Pool(processes=cpu_num)
+    # processes = []
+    # for proc_id, annotation_set in enumerate(annotations_split):
+    #     p = workers.apply_async(pq_compute_single_core,
+    #                             (proc_id, annotation_set, gt_folder, pred_folder, categories, iou_type, dilation_ratio,VOID))
+    #     processes.append(p)
+    # pq_stat = PQStat()
+    # for p in processes:
+    #     pq_stat += p.get()
+    # return pq_stat
+    pq_stat = pq_compute_single_core(0, matched_annotations_list, gt_folder, pred_folder, categories, iou_type, dilation_ratio,VOID)
     return pq_stat
 
 

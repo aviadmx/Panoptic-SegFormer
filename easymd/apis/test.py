@@ -174,12 +174,12 @@ def multi_gpu_test_plus(model, data_loader,datasets='coco',segmentations_folder=
                     # image_id = int(file_name) # for coco
                     image_id = data_loader.dataset.file_names_to_imd_ids[file_name]
                 annotations.append({'image_id': image_id,
-                                'file_name':file_name+suffix,
+                                'file_name':os.path.splitext(file_name)[0]+suffix,
                                 "segments_info": segm_info
                                 })
                 pan_format = pan_format[:,:,::-1]   ## note this 
                 
-                mmcv.imwrite(pan_format,os.path.join(segmentations_folder, file_name+suffix))
+                mmcv.imwrite(pan_format,os.path.join(segmentations_folder, os.path.splitext(file_name)[0]+suffix))
                 '''
                 detectron2_show = False
                 if detectron2_show:

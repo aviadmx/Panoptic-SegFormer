@@ -199,5 +199,5 @@ optimizer = dict(
 optimizer_config = dict(grad_clip=dict(max_norm=0.1, norm_type=2))
 # learning policy
 lr_config = dict(policy='step', step=[18])
-runner = dict(type='EpochBasedRunner', max_epochs=24)
+runner = dict(type='EpochBasedRunner', max_epochs=200)
 custom_hooks = [dict(type='CacheCleaner',priority='HIGHEST')]#[dict(type='GradChecker',priority='HIGHEST')]

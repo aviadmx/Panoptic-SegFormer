@@ -31,7 +31,12 @@ class CocoDataset_panoptic(CustomDataset):
         self.gt_json = gt_json
         self.gt_folder = gt_folder
         self.segmentations_folder = segmentations_folder
-        self.excluded_images = ['bgr_2021/5158158.jpg', 'bgr_2021/3651786.jpg', 'bgr_2021/4732679.jpg', 'bgr_2021/999001.jpg']
+        self.excluded_images = ['autotrader/64ea65163afa42ffbd87cc27f7d6f171.jpg', 'autotrader/85d17c4896fd417d9aaf667d74fc628d.jpg', 'bgr_2021/4732679.jpg',
+                                'bgr_2021/999001.jpg', 'bgr_2021/3363369.jpg', 'bgr_2021/3651786.jpg', 'bgr_2021/691138.jpg', 'bgr_2021/831475.jpg', 'bgr_2021/3651786.jpg'
+                                'bgr_2021/4732679.jpg', 'clip_retrieval_website/luxury/801129245_rolls-royce-phantom-c995728012016180020_1.jpg',
+                                'clip_retrieval_website/sedan/1328525040_ford-mondeo-zetec-for-sale.jpg', 'clip_retrieval_website/sedan/3459884369_1573895657_skoda_octavia_1_9_tdi_ambiente_2004_14305660567.jpg'
+                                'clip_retrieval_website/sports/4837282865_luxury-car-pictures_csp6068968.jpg', 'clip_retrieval_website/sports/443934117_lamborghini%EF%BC%8C%E8%B7%91%E8%BD%A6%EF%BC%8C%E8%B6%85%E7%BA%A7%E6%B1%BD%E8%BD%A6-62892754.jpg',
+                                'yad2/y2_4_07953_20220322165755.jpg'] # removed 'bgr_2021/5158158.jpg'
         super(CocoDataset_panoptic, self).__init__(**kwarags)
 
     def load_annotations(self, ann_file):
@@ -63,8 +68,9 @@ class CocoDataset_panoptic(CustomDataset):
         assert len(set(total_ann_ids)) == len(
             total_ann_ids), f"Annotation ids in '{ann_file}' are not unique!"
 
-        ## TO UNCOMMENT ##
-        # data_infos = data_infos[:10]
+        ### TO COMMENT ###
+        # if not self.test_mode:
+        #     data_infos = data_infos[:100]
 
         return data_infos
 
@@ -411,7 +417,8 @@ class CocoDataset_panoptic(CustomDataset):
         if 'panoptic' in metrics:
             assert 'panoptic' in results.keys()
             panoptic_result = results['panoptic']
-            results_pq = pq_compute2(self.gt_json,panoptic_result, self.gt_folder, self.segmentations_folder,logger=logger)
+            results_pq = pq_compute2(self.gt_json, panoptic_result, self.gt_folder, self.segmentations_folder,
+                                     logger=logger)
             eval_results.update(results_pq)
             metrics = [metric for metric in metrics if metric != 'panoptic']
 

@@ -4,6 +4,7 @@ import torch.distributed as dist
 from mmcv.runner import DistEvalHook as BaseDistEvalHook
 from mmcv.runner import EvalHook as BaseEvalHook
 from torch.nn.modules.batchnorm import _BatchNorm
+import shutil
 
 
 class EvalHook_plus(BaseEvalHook):
@@ -56,6 +57,7 @@ class DistEvalHook_plus(BaseDistEvalHook):
             tmpdir=tmpdir,
             gpu_collect=self.gpu_collect)
         if runner.rank == 0:
+            shutil.copytree(self.segmentations_folder, self.segmentations_folder + '_per_epoch' + '/ep_' + str(runner.epoch))
             print('\n')
             runner.log_buffer.output['eval_iter_num'] = len(self.dataloader)
             key_score = self.evaluate(runner, results)
