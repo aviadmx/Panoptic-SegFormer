@@ -31,12 +31,20 @@ class CocoDataset_panoptic(CustomDataset):
         self.gt_json = gt_json
         self.gt_folder = gt_folder
         self.segmentations_folder = segmentations_folder
-        self.excluded_images = ['autotrader/64ea65163afa42ffbd87cc27f7d6f171.jpg', 'autotrader/85d17c4896fd417d9aaf667d74fc628d.jpg', 'bgr_2021/4732679.jpg',
-                                'bgr_2021/999001.jpg', 'bgr_2021/3363369.jpg', 'bgr_2021/3651786.jpg', 'bgr_2021/691138.jpg', 'bgr_2021/831475.jpg', 'bgr_2021/3651786.jpg'
-                                'bgr_2021/4732679.jpg', 'clip_retrieval_website/luxury/801129245_rolls-royce-phantom-c995728012016180020_1.jpg',
-                                'clip_retrieval_website/sedan/1328525040_ford-mondeo-zetec-for-sale.jpg', 'clip_retrieval_website/sedan/3459884369_1573895657_skoda_octavia_1_9_tdi_ambiente_2004_14305660567.jpg'
-                                'clip_retrieval_website/sports/4837282865_luxury-car-pictures_csp6068968.jpg', 'clip_retrieval_website/sports/443934117_lamborghini%EF%BC%8C%E8%B7%91%E8%BD%A6%EF%BC%8C%E8%B6%85%E7%BA%A7%E6%B1%BD%E8%BD%A6-62892754.jpg',
-                                'yad2/y2_4_07953_20220322165755.jpg'] # removed 'bgr_2021/5158158.jpg'
+        self.excluded_images = ['autotrader/b9fbdaeee7474bb68cee5626b1b92ff8.jpg',
+                                'autotrader/f486f4b0af38407fb6c54dae18d26110.jpg',
+                                'bgr_2021/587882.jpg', 'bgr_2021/3802510.jpg',
+                                'bgr_2021/4024484.jpg', 'bgr_2021/1085171.jpg',
+                                'clip_retrieval_website/luxury/1029287825_Fab-Design-Areion-Mercedes-AMG-GT-S-169Gallery-d7990c56-1010781.jpg'
+                                'kaggle_cars_segmentation/156551_preview.png',
+                                'kaggle_cars_segmentation/driver-clipart-horsepower-sports-car-side-view-png-transparent-side-car-png-880_295.png',
+                                'kaggle_cars_segmentation/im20.png', 'pascal_voc_2012_cars/2009_004436.jpg',
+                                'yad2/y2_4_06299_20220414114725.jpeg',
+                                'bgr_2021/999001.jpg', 'bgr_2021/691138.jpg', 'bgr_2021/831475.jpg',
+                                'clip_retrieval_website/luxury/801129245_rolls-royce-phantom-c995728012016180020_1.jpg',
+                                'clip_retrieval_website/sedan/1328525040_ford-mondeo-zetec-for-sale.jpg',
+                                'clip_retrieval_website/sports/443934117_lamborghini%EF%BC%8C%E8%B7%91%E8%BD%A6%EF%BC%8C%E8%B6%85%E7%BA%A7%E6%B1%BD%E8%BD%A6-62892754.jpg',
+                                'pascal_voc_2021_cars/2008_004069.jpg']
         super(CocoDataset_panoptic, self).__init__(**kwarags)
 
     def load_annotations(self, ann_file):
