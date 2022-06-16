@@ -167,9 +167,11 @@ class Attention(nn.Module):
         feats_l2 = F.interpolate(feats_l2, size=hw_lvl[0],
                                  mode='bilinear').permute(0, 2, 3, 1).reshape(
                                      B, N, wedge_1, self.num_heads)
+        # feats_l2 = F.relu(feats_l2) ### TODO: remove
         feats_l3 = F.interpolate(feats_l3, size=hw_lvl[0],
                                  mode='bilinear').permute(0, 2, 3, 1).reshape(
                                      B, N, wedge_1, self.num_heads)
+        # feats_l3 = F.relu(feats_l3) ### TODO: remove
 
         #print(feats_l1.shape,feats_l2.shape,feats_l3.shape)
 
@@ -260,9 +262,11 @@ class AttentionTail(nn.Module):
         feats_l2 = F.interpolate(feats_l2, size=hw_lvl[0],
                                  mode='bilinear').permute(0, 2, 3, 1).reshape(
                                      B, N, wedge_1, self.num_heads)
+        # feats_l2 = F.relu(feats_l2)  ### TODO: remove
         feats_l3 = F.interpolate(feats_l3, size=hw_lvl[0],
                                  mode='bilinear').permute(0, 2, 3, 1).reshape(
                                      B, N, wedge_1, self.num_heads)
+        # feats_l3 = F.relu(feats_l3)  ### TODO: remove
         #print(feats_l1.shape,feats_l2.shape,feats_l3.shape)
         new_feats = torch.cat([feats_l1, feats_l2, feats_l3], -1)
         mask = self.linear(new_feats)

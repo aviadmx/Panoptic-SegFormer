@@ -4,6 +4,7 @@ import math
 import mmcv
 import torch
 import torch.nn as nn
+from torch.nn import functional as F
 
 from mmdet.core import bbox_overlaps
 #from ..builder import LOSSES
@@ -68,9 +69,69 @@ def l1_loss(pred, target):
     return loss
 
 
+@weighted_loss
+def dice_loss_api(input, target, mask=None, eps=0.001):
+    w1 = torch.abs(F.avg_pool2d(target, kernel_size=3, stride=1, padding=1) - target)
+    w2 = torch.abs(F.avg_pool2d(target, kernel_size=7, stride=1, padding=3) - target)
+    w3 = torch.abs(F.avg_pool2d(target, kernel_size=15, stride=1, padding=7) - target)
+    # w3 = torch.abs(F.avg_pool2d(target, kernel_size=31, stride=1, padding=15) - target)
 
+    omega = 1 + 0.5 * (w1 + w2 + w3) * target
 
+    N, H, W = input.shape
 
+    input = input.contiguous().view(N, H * W)
+    target = target.contiguous().view(N, H * W).float()
+    omega = omega.contiguous().view(N, H * W).float()
+    if mask is not None:
+        mask = mask.contiguous().view(N, H * W).float()
+        input = input * mask
+        target = target * mask
+    a = torch.sum(input * target * omega, 1)
+    b = torch.sum(input * input * omega, 1) + eps
+    c = torch.sum(target * target * omega, 1) + eps
+    d = (2 * a) / (b + c)
+    # print('1-d max',(1-d).max())
+    return 1 - d
+
+@LOSSES.register_module()
+class DiceLossWithAPI(nn.Module):
+
+    def __init__(self, eps=1e-6, reduction='mean', loss_weight=1.0):
+        super(DiceLossWithAPI, self).__init__()
+        self.eps = eps
+        self.reduction = reduction
+        self.loss_weight = loss_weight
+        self.count = 0
+    def forward(self,
+                pred,
+                target,
+                weight=None,
+                mask=None,
+                avg_factor=None,
+                reduction_override=None,
+                **kwargs):
+
+        assert reduction_override in (None, 'none', 'mean', 'sum')
+        reduction = (
+            reduction_override if reduction_override else self.reduction)
+        #if weight is not None and weight.dim() > 1:
+            # TODO: remove this in the future
+            # reduce the weight of shape (n,w,h) to (n,) to match the
+            # giou_loss of shape (n,)
+            #assert weight.shape == pred.shape
+            #weight = weight.mean((-2,-1))
+        loss = self.loss_weight * dice_loss_api(
+            pred,
+            target,
+            weight,
+            mask=mask,
+            eps=self.eps,
+            reduction=reduction,
+            avg_factor=avg_factor,
+            **kwargs)
+        #print('DiceLoss',loss, avg_factor)
+        return loss
 
 @LOSSES.register_module()
 class DiceLoss(nn.Module):
